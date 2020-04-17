@@ -112,14 +112,35 @@ namespace course_work
             }
         }
 
-
-
-        public static Dictionary<string, List<string>>[] GetIndex(int threadNumber)
+        private static IOrderedEnumerable<KeyValuePair<string, List<string>>> MergeIndexes(
+            Dictionary<string, List<string>>[] indexes)
         {
-            Dictionary<string, List<string>>[] index = new Dictionary<string, List<string>>[threadNumber];
-            for (int i = 0; i < index.Length; i++)
+            for (int i = 1; i < indexes.Length; i++)
             {
-                index[i] = new Dictionary<string, List<string>>();
+                foreach (var item in indexes[i])
+                {
+                    if (indexes[0].ContainsKey(item.Key))
+                    {
+                        indexes[0][item.Key].AddRange(item.Value);
+                    }
+                    else
+                    {
+                        indexes[0].Add(item.Key, item.Value);
+                    }
+                }
+            }
+
+            return from item in indexes[0]
+                orderby item.Key
+                select item;
+        }
+
+        public static IOrderedEnumerable<KeyValuePair<string, List<string>>> GetIndex(int threadNumber)
+        {
+            Dictionary<string, List<string>>[] indexes = new Dictionary<string, List<string>>[threadNumber];
+            for (int i = 0; i < indexes.Length; i++)
+            {
+                indexes[i] = new Dictionary<string, List<string>>();
             }
 
             Dictionary<string, string[]>[] files = ReadFiles(threadNumber);
@@ -129,7 +150,7 @@ namespace course_work
             {
                 int temp = i;
                 threadArray[i] = new Thread(
-                    () => GetIndexThreadFunc(ref index[temp], files[temp]));
+                    () => GetIndexThreadFunc(ref indexes[temp], files[temp]));
                 threadArray[i].Start();
             }
 
@@ -138,7 +159,7 @@ namespace course_work
                 threadArray[i].Join();
             }
 
-            return index;
+            return MergeIndexes(indexes);
         }
     }
 }
