@@ -1,6 +1,0 @@
-/home/bwnuts/RiderProjects/parallel/course_work_2/course_work/course_work/bin/Debug/course_work.exe
-/home/bwnuts/RiderProjects/parallel/course_work_2/course_work/course_work/bin/Debug/course_work.pdb
-/home/bwnuts/RiderProjects/parallel/course_work_2/course_work/course_work/obj/Debug/course_work.csprojAssemblyReference.cache
-/home/bwnuts/RiderProjects/parallel/course_work_2/course_work/course_work/obj/Debug/course_work.csproj.CoreCompileInputs.cache
-/home/bwnuts/RiderProjects/parallel/course_work_2/course_work/course_work/obj/Debug/course_work.exe
-/home/bwnuts/RiderProjects/parallel/course_work_2/course_work/course_work/obj/Debug/course_work.pdb
