@@ -1,13 +1,8 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Runtime.InteropServices;
 using System.Threading;
-using Microsoft.SqlServer.Server;
 
 namespace course_work
 {
@@ -24,12 +19,8 @@ namespace course_work
 
             string[] splittedName = file.Split('/');
             int name = Convert.ToInt32(splittedName[splittedName.Length - 1].Split('_')[0]);
-            if (name >= lowerBound && name <= upperBound)
-            {
-                return true;
-            }
-
-            return false;
+            
+            return (name >= lowerBound && name <= upperBound);
         }
 
         private static IEnumerable<string> GetFiles()
@@ -40,22 +31,22 @@ namespace course_work
                 select file;
         }
 
-        private static void ReadFilesThreadFunc(ref Dictionary<string, string[]> fileText, string[] files
+        private static void ReadFilesThreadFunc(ref Dictionary<string, string[]> dirTexts, string[] files
             , int threadId, int threadNumber)
         {
             for (int i = threadId; i < files.Length; i += threadNumber)
             {
-                fileText.Add(files[i], File.ReadAllText(files[i]).Split(' '));
+                dirTexts.Add(files[i], File.ReadAllText(files[i]).Split(' '));
             }
 
         }
 
         private static Dictionary<string, string[]>[] ReadFiles(int threadNumber)
         {
-            Dictionary<string, string[]>[] filesTexts = new Dictionary<string, string[]>[threadNumber];
-            for (int i = 0; i < filesTexts.Length; i++)
+            Dictionary<string, string[]>[] dirsTexts = new Dictionary<string, string[]>[threadNumber];
+            for (int i = 0; i < dirsTexts.Length; i++)
             {
-                filesTexts[i] = new Dictionary<string, string[]>();
+                dirsTexts[i] = new Dictionary<string, string[]>();
             }
 
             string[] files = GetFiles().ToArray();
@@ -65,27 +56,27 @@ namespace course_work
             {
                 int temp = i;
                 threadArray[i] = new Thread(
-                    () => ReadFilesThreadFunc(ref filesTexts[temp], files, temp, threadNumber));
+                    () => ReadFilesThreadFunc(ref dirsTexts[temp], files, temp, threadNumber));
                 threadArray[i].Start();
             }
 
-            for (int i = 0; i < threadArray.Length; i++)
+            foreach (var thread in threadArray )
             {
-                threadArray[i].Join();
+                thread.Join();
             }
 
-            return filesTexts;
+            return dirsTexts;
         }
 
         private static string ParseWord(string word)
         {
             string result = "";
 
-            for (int i = 0; i < word.Length; i++)
+            foreach ( var symbol in word)
             {
-                if (Char.IsLetter(word[i]) || word[i] == 39)
+                if (Char.IsLetter(symbol) || symbol == 39)
                 {
-                    result += word[i];
+                    result += symbol;
                 }
             }
 
@@ -154,9 +145,9 @@ namespace course_work
                 threadArray[i].Start();
             }
 
-            for (int i = 0; i < threadArray.Length; i++)
+            foreach (var thread in threadArray)
             {
-                threadArray[i].Join();
+                thread.Join();
             }
 
             return MergeIndexes(indexes);

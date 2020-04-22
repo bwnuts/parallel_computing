@@ -52,6 +52,7 @@ namespace course_work
             
             Console.WriteLine($"Best performance - {iMin+1} threads");
 
+            // Checking the result
             /*var first = indexes[0].ToArray();
             for (int i = 1; i < indexes.Length; i++)
             {
