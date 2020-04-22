@@ -11,6 +11,7 @@ namespace course_work
         private static bool CheckFile(string file)
         {
             int lowerBound = 4500, upperBound = 4750;
+            
             if (file.Contains("unsup"))
             {
                 lowerBound = 18000;
@@ -19,7 +20,7 @@ namespace course_work
 
             string[] splittedName = file.Split('/');
             int name = Convert.ToInt32(splittedName[splittedName.Length - 1].Split('_')[0]);
-            
+
             return (name >= lowerBound && name <= upperBound);
         }
 
@@ -31,19 +32,19 @@ namespace course_work
                 select file;
         }
 
-        private static void ReadFilesThreadFunc(ref Dictionary<string, string[]> dirTexts, string[] files
-            , int threadId, int threadNumber)
+        private static void ReadFilesThreadFunc(ref Dictionary<string, string[]> dirTexts, string[] files,
+            int threadId, int threadNumber)
         {
             for (int i = threadId; i < files.Length; i += threadNumber)
             {
                 dirTexts.Add(files[i], File.ReadAllText(files[i]).Split(' '));
             }
-
         }
 
         private static Dictionary<string, string[]>[] ReadFiles(int threadNumber)
         {
             Dictionary<string, string[]>[] dirsTexts = new Dictionary<string, string[]>[threadNumber];
+            
             for (int i = 0; i < dirsTexts.Length; i++)
             {
                 dirsTexts[i] = new Dictionary<string, string[]>();
@@ -52,6 +53,7 @@ namespace course_work
             string[] files = GetFiles().ToArray();
 
             Thread[] threadArray = new Thread[threadNumber];
+            
             for (int i = 0; i < threadArray.Length; i++)
             {
                 int temp = i;
@@ -60,7 +62,7 @@ namespace course_work
                 threadArray[i].Start();
             }
 
-            foreach (var thread in threadArray )
+            foreach (var thread in threadArray)
             {
                 thread.Join();
             }
@@ -71,10 +73,11 @@ namespace course_work
         private static string ParseWord(string word)
         {
             string result = "";
+            const int apostropheCode = 39;
 
-            foreach ( var symbol in word)
+            foreach (var symbol in word)
             {
-                if (Char.IsLetter(symbol) || symbol == 39)
+                if (Char.IsLetter(symbol) || symbol == apostropheCode)
                 {
                     result += symbol;
                 }
@@ -91,6 +94,7 @@ namespace course_work
                 foreach (var word in file.Value)
                 {
                     string parsedWord = ParseWord(word);
+                    
                     if (index.ContainsKey(parsedWord))
                     {
                         index[parsedWord].Add(file.Key);
@@ -129,6 +133,7 @@ namespace course_work
         public static IOrderedEnumerable<KeyValuePair<string, List<string>>> GetIndex(int threadNumber)
         {
             Dictionary<string, List<string>>[] indexes = new Dictionary<string, List<string>>[threadNumber];
+            
             for (int i = 0; i < indexes.Length; i++)
             {
                 indexes[i] = new Dictionary<string, List<string>>();
@@ -137,6 +142,7 @@ namespace course_work
             Dictionary<string, string[]>[] files = ReadFiles(threadNumber);
 
             Thread[] threadArray = new Thread[threadNumber];
+            
             for (int i = 0; i < threadArray.Length; i++)
             {
                 int temp = i;
